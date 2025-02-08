@@ -30,12 +30,12 @@ export const signupController = asyncHandler(async (req, res) => {
     const { fullName, email } = req.body;
 
     const userExist = await findUserByField('email', email)
+
     if (userExist) return res.status(400).json({ message: "User with email already exist", success: false })
 
     await createUser({ fullName, email })
 
     const otp = generateOtp()
-
 
     await sendEmail({
         to: email,
@@ -46,7 +46,7 @@ export const signupController = asyncHandler(async (req, res) => {
         </div>`,
     })
 
-    res.status(201).json({ message: 'Otp send successfully', success: true });
+    res.status(201).json({ message: 'Otp send successfully', data: otp, success: true });
 });
 
 
@@ -64,13 +64,15 @@ export const signInController = asyncHandler(async (req, res) => {
 
     const otp = generateOtp()
 
-    console.log(otp);
-    
 
     await sendEmail({
         to: email,
         subject: "User Verification",
-        html: `<p> your otp is ${otp}</p>`,
+        html: `
+        <div>
+             <p> your otp is ${otp}</p>
+             <p> your otp is only valid for 6 minutes</p>
+        </div >`,
     })
 
     res.status(201).json({ message: 'Otp send successfully', data: otp, success: true });
