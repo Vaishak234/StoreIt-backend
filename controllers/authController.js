@@ -15,6 +15,8 @@ const createUserData = (user, accessToken) => {
     return {
         fullName: user.fullName,
         email: user.email,
+        storageLimit:user.storageLimit,
+        storageUsed:user.storageUsed,
         accessToken,
     };
 };

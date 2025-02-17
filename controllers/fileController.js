@@ -8,8 +8,7 @@ import { createFile } from '../services/fileServices.js';
 
 export const createPresignedUrlController = asyncHandler(async (req, res) => {
     const userId = req.userId;
-    const storageLimit = process.env.STORAGE_LIMIT;  // Ensure storage limit is set in the environment variable
-
+    
     // Calculate the total file size from the uploaded files
     const totalFileSize = req.files.reduce((acc, value) => acc + value.size, 0) || 0;
 
@@ -19,7 +18,7 @@ export const createPresignedUrlController = asyncHandler(async (req, res) => {
 
     const user = await UserModel.findById(userId);
 
-    if (user.storageUsed + parseFloat(totalFileSize) >= parseFloat(2 * 1024 * 1024 * 1024)) {
+    if (user.storageUsed + parseFloat(totalFileSize) >= user.storageLimit) {
 
         return res.status(409).json({ message: "Storage limit exceeded", success: false });
     }
@@ -231,7 +230,7 @@ export const getFilesSpace = asyncHandler(async (req, res) => {
 
                     },
                     {
-                        $limit: 7
+                        $limit: 9
                     }
                 ]
             }
